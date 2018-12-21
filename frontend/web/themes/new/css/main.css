@@ -1,0 +1,7 @@
+.ajax-loader {
+    background: url("../img/gears.gif");
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    margin-top: -60px;
+}

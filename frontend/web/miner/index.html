@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <title>Simple WebSocket call sample</title>
+    <style>
+        ul {
+            list-style: none;
+        }
+        ul li {
+            display: inline-block;
+            border: 1px solid black;
+            padding: 5px;
+            vertical-align: top;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<script type="text/javascript">
+    $(function(){
+        draw();
+    });
+
+    var translate = {
+        'NAME': 'Software',
+        'VER': 'Version',
+        'ALGO': 'Algorithm',
+        'GPUS': 'GPUs',
+        'CPUS': 'Threads',
+        'KHS': 'Hash rate (kH/s)',
+        'ACC': 'Accepted shares',
+        'ACCMN': 'Accepted / mn',
+        'REJ': 'Rejected',
+        'DIFF': 'Difficulty',
+        'UPTIME': 'Miner up time',
+        'TS': 'Last update',
+        'TEMP': 'T°c',
+        'FAN': 'Fan %',
+        'FREQ': 'Freq.',
+        'PST': 'P-State'
+    };
+    var exclude = {
+        'NAME': true,
+        'VER': true,
+        'API': true,
+        'ALGO': true,
+        'TEMP': true,
+        'FAN': true,
+        'FREQ': true
+    };
+
+    var dataView = {
+        'aru1': {'ip': '188.213.161.228', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru2': {'ip': '94.177.160.6', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru3': {'ip': '94.177.163.59', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru4': {'ip': '188.213.173.246', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru5': {'ip': '89.36.210.149', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru6': {'ip': '188.213.161.56', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru7': {'ip': '188.213.174.201', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru8': {'ip': '77.81.226.107', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru9': {'ip': '77.81.234.179', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru10': {'ip': '188.213.165.206', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru11': {'ip': '89.46.75.50', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru12': {'ip': '5.249.154.155', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru13': {'ip': '5.249.155.121', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru14': {'ip': '94.177.179.106', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru15': {'ip': '89.46.73.158', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru16': {'ip': '89.36.213.251', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru17': {'ip': '89.36.214.137', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru18': {'ip': '89.36.215.253', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru19': {'ip': '94.177.240.10', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru20': {'ip': '89.38.148.135', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru21': {'ip': '89.46.74.147', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru22': {'ip': '94.177.179.88', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru23': {'ip': '89.46.75.252', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru24': {'ip': '89.46.79.192', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru25': {'ip': '5.249.154.90', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru26': {'ip': '89.40.114.160', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru27': {'ip': '89.40.115.234', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru28': {'ip': '89.36.214.207', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru29': {'ip': '89.38.150.161', 'port': '4068', 'summary': {}, 'threads': {}},
+        'aru30': {'ip': '89.38.151.25', 'port': '4068', 'summary': {}, 'threads': {}},
+
+        'hic1': {'ip': '89.203.249.205', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic2': {'ip': '89.203.249.115', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic3': {'ip': '89.203.249.232', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic4': {'ip': '89.203.250.94', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic5': {'ip': '89.203.249.25', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic6': {'ip': '89.203.250.39', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic7': {'ip': '89.203.250.41', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic8': {'ip': '89.203.250.122', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic9': {'ip': '89.203.250.165', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic10': {'ip': '89.203.250.170', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic11': {'ip': '89.203.250.174', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic12': {'ip': '89.203.250.188', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic13': {'ip': '89.203.250.189', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic14': {'ip': '89.203.250.201', 'port': '4068', 'summary': {}, 'threads': {}},
+        'hic15': {'ip': '89.203.250.202', 'port': '4068', 'summary': {}, 'threads': {}},
+
+        'cloud1': {'ip': '163.172.188.250', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud2': {'ip': '163.172.148.201', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud3': {'ip': '163.172.184.180', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud4': {'ip': '163.172.138.162', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud5': {'ip': '163.172.170.175', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud6': {'ip': '212.47.237.79', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud7': {'ip': '163.172.184.156', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud8': {'ip': '212.47.248.165', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud9': {'ip': '163.172.162.233', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud10': {'ip': '212.47.235.196', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud11': {'ip': '163.172.178.250', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud12': {'ip': '163.172.129.43', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud13': {'ip': '163.172.153.105', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud14': {'ip': '163.172.187.117', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud15': {'ip': '163.172.178.245', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud16': {'ip': '163.172.162.195', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud17': {'ip': '163.172.156.104', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud18': {'ip': '163.172.181.104', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud19': {'ip': '163.172.138.220', 'port': '4068', 'summary': {}, 'threads': {}},
+        'cloud20': {'ip': '163.172.132.243', 'port': '4068', 'summary': {}, 'threads': {}}
+    };
+
+    function websocketStart(serverName, ip, port)
+    {
+        try {
+            var ws_summary = new WebSocket('ws://'+ip+':'+port+'/summary','text');
+            ws_summary.onmessage = function (evt) {
+                var now = new Date();
+                var ts = Math.round(now/1000);
+                var data = evt.data.split('|');
+                for (n in data) {
+                    var map = data[n].split(';');
+                    var cpu = 0;
+                    for (k in map) {
+                        var kv = map[k].split('=');
+                        if (kv.length == 1)
+                            continue;
+                        dataView[serverName]['summary'][kv[0]] = kv[1];
+                    }
+                }
+            };
+            ws_summary.onerror = function (evt) {
+                var w = evt.target;
+                return false;
+            };
+            ws_summary.onclose = function() {
+                // websocket is closed.
+            };
+
+            /*var ws_threads = new WebSocket('ws://'+ip+':'+port+'/threads','text');
+            ws_threads.onmessage = function (evt) {
+                var now = new Date();
+                var ts = Math.round(now/1000);
+                var data = evt.data.split('|');
+                for (n in data) {
+                    var map = data[n].split(';');
+                    var cpu = 0;
+                    for (k in map) {
+                        var kv = map[k].split('=');
+                        if (kv.length == 1)
+                            continue;
+                        dataView[serverName]['threads'][kv[0]] = kv[1];
+                    }
+                }
+            };
+            ws_threads.onerror = function (evt) {
+                var w = evt.target;
+                return false;
+            };
+            ws_threads.onclose = function() {
+                // websocket is closed.
+            };*/
+        } catch (ex) {
+
+        }
+    }
+
+    function draw()
+    {
+        $.each(dataView, function(serverName, serverInfo){
+            websocketStart(serverName, serverInfo['ip'], serverInfo['port']);
+        });
+
+        var KHS = 0;
+        var ACC = 0;
+        var REJ = 0;
+        var $ul = $('<ul>');
+
+        $.each(dataView, function(serverName, serverDate) {
+            var $li = $('<li>').appendTo($ul);
+            var $table = $('<table>', {'html': '<tr><td>Server</td><td>'+serverName+' ('+serverDate['ip']+')'+'</td></tr>'}).appendTo($li);
+            if($.isEmptyObject(serverDate['summary']) == true) {
+                return;
+            }
+            $.each(serverDate['summary'], function(field, value){
+                if(exclude[field] == true) {
+                    return;
+                }
+
+                if(field == 'TS') {
+                    var date = new Date();
+                    date.setTime(value * 1000);
+                    value = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+                }
+
+                var $tr = $('<tr>').appendTo($table);
+
+                var name = field;
+                if(translate[field] !== undefined) {
+                    name = translate[field];
+                }
+                $('<td>', {'text': name}).appendTo($tr);
+                $('<td>', {'text': value}).appendTo($tr);
+
+                if(field == 'KHS') {
+                    KHS += parseFloat(value);
+                }
+                if(field == 'ACC') {
+                    ACC += parseInt(value);
+                }
+                if(field == 'REJ') {
+                    REJ += parseInt(value);
+                }
+            });
+        });
+
+        $('#container').html('<table>' +
+                '<tr><td>Total Hash</td><td>'+KHS+'</td></tr>' +
+                '<tr><td>Total Accept shares</td><td>'+ACC+'</td></tr>' +
+                '<tr><td>Total Reject shares</td><td>'+REJ+'</td></tr>' +
+                '</table>').append($ul);
+        setTimeout(function(){
+            draw();
+        }, 2000);
+    }
+</script>
+</body>
+</html>
